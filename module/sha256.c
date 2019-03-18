@@ -7,6 +7,8 @@ MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
 #else
 #include <stdint.h>
 #include <string.h>
+
+#define min(a,b) (((a) > (b)) ? (b) : (a))
 #endif
 
 #include "sha256.h"
@@ -32,7 +34,6 @@ void sha256_init(struct sha256_state *state) {
 	state->L = 0;
 }
 
-#define min(a,b) (((a) > (b)) ? (b) : (a))
 
 void sha256_update(struct sha256_state *state, const unsigned char *data, unsigned int len) {
 	unsigned int r;

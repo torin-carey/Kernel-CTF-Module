@@ -1,2 +1,12 @@
-getflag: ioctl.c sha256.c flagio.c
+getflag-obj := ioctl.o sha256.o flagio.o
+
+getflag: $(getflag-obj)
 	gcc -o $@ $^
+
+%.o: %.c
+	gcc -c -o $@ $<
+
+clean:
+	rm -f $(getflag-obj) getflag
+
+.PHONY: clean

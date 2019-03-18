@@ -18,7 +18,7 @@ MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
 #define FLAG_FLAG1 1
 #define FLAG_FLAG2 2
 
-static struct file_state {
+struct file_state {
 	int auth;
 	struct semaphore sem;
 };
@@ -33,7 +33,7 @@ static int mod_open(struct inode *inode, struct file *file) {
 		printk(KERN_ERR "failed to allocate memory\n");
 		return -ENOMEM;
 	}
-	state->auth;
+	state->auth = 0;
 	sema_init(&state->sem, 1);
 	file->private_data = (void *)state;
 	return 0;
@@ -46,14 +46,15 @@ static int mod_release(struct inode *inode, struct file *file) {
 
 static ssize_t mod_read(struct file *file, char __user *data, size_t size, loff_t *offset) {
 	unsigned int avail;
-	unsigned long w;
+	unsigned long f;
 	if (*offset >= sizeof(mymessage) || *offset < 0)
 		return 0;
 	avail = sizeof(mymessage) - *offset;
 	avail = avail > size ? size : avail;
-	w = copy_to_user(data, mymessage, avail);
-	*offset += w;
-	return w;
+	f = copy_to_user(data, mymessage, avail);
+	avail -= f;
+	*offset += avail;
+	return avail;
 }
 
 static ssize_t mod_write(struct file *file, const char __user *data, size_t size, loff_t *offset) {
@@ -82,7 +83,6 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 	void *sptr, *mptr, *eptr;
 	state = (struct file_state *)file->private_data;
 
-	printk(KERN_INFO "ioctl( %x , %lx )\n", cmd, arg);
 	if (down_interruptible(&state->sem))
 		return -EINTR;
 	switch (cmd) {
