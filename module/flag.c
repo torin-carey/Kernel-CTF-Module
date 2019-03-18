@@ -15,9 +15,11 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
 
+#define FLAG_FLAG1 1
+#define FLAG_FLAG2 2
+
 static struct file_state {
-	int auth_flag1, auth_flag2, auth_root;
-	unsigned int pos;
+	int auth;
 	struct semaphore sem;
 };
 
@@ -31,10 +33,7 @@ static int mod_open(struct inode *inode, struct file *file) {
 		printk(KERN_ERR "failed to allocate memory\n");
 		return -ENOMEM;
 	}
-	state->auth_flag1 = 0;
-	state->auth_flag2 = 0;
-	state->auth_root = 0;
-	state->pos = 0;
+	state->auth;
 	sema_init(&state->sem, 1);
 	file->private_data = (void *)state;
 	return 0;
@@ -42,22 +41,19 @@ static int mod_open(struct inode *inode, struct file *file) {
 
 static int mod_release(struct inode *inode, struct file *file) {
 	kfree(file->private_data);
-	file->private_data = NULL;
 	return 0;
 }
 
 static ssize_t mod_read(struct file *file, char __user *data, size_t size, loff_t *offset) {
-	unsigned int r, avail;
+	unsigned int avail;
 	unsigned long w;
-	r = ((struct file_state *)file->private_data)->pos;
-	if (r >= sizeof(mymessage))
+	if (*offset >= sizeof(mymessage) || *offset < 0)
 		return 0;
-	avail = sizeof(mymessage) - r;
+	avail = sizeof(mymessage) - *offset;
 	avail = avail > size ? size : avail;
 	w = copy_to_user(data, mymessage, avail);
-	r += avail;
-	((struct file_state *)file->private_data)->pos = r;
-	return r;
+	*offset += w;
+	return w;
 }
 
 static ssize_t mod_write(struct file *file, const char __user *data, size_t size, loff_t *offset) {
@@ -91,7 +87,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		return -EINTR;
 	switch (cmd) {
 	case IOCTL_GET_FLAG1:
-		if (!state->auth_flag1) {
+		if (!(state->auth & FLAG_FLAG1)) {
 			ret = -EPERM;
 			goto finish;
 		}
@@ -99,7 +95,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		ret = sizeof(flag1) - ret;
 		goto finish;
 	case IOCTL_GET_FLAG2:
-		if (!state->auth_flag2) {
+		if (!(state->auth & FLAG_FLAG2)) {
 			ret = -EPERM;
 			goto finish;
 		}
@@ -128,10 +124,10 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 			if (mptr - sptr == 12) {
 				if (!memcmp(sptr, "UNLOCK_FLAG1", 12)) {
 					printk(KERN_INFO "flag1 unlocked\n");
-					state->auth_flag1 = 1;
+					state->auth |= FLAG_FLAG1;
 				} else if (!memcmp(sptr, "UNLOCK_FLAG2", 12)) {
 					printk(KERN_INFO "flag2 unlocked\n");
-					state->auth_flag2 = 1;
+					state->auth |= FLAG_FLAG2;
 				}
 			}
 			sptr = mptr + 1;
