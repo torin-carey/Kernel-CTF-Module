@@ -10,6 +10,7 @@
 #include "ioctl.h"
 #include "sha256.h"
 #include "flagio.h"
+#include "../module/flag.h"
 
 const char *alpha = "0123456789abcdef";
 
@@ -34,67 +35,16 @@ unsigned char payload[] = {
 unsigned int payload_len = 61;
 
 int main(int argc, char **argv) {
-	int result = -1;
-	if (flag_open())
-		goto fail_open;
 
+	struct sha256_state state;
+	sha256_init(&state);
+	sha256_update(&state, key, sizeof(key));
+	sha256_update(&state, "UNLOCK_FLAG2", 12);
+	unsigned char digest[32];
+	sha256_final(&state, digest);
+
+	for (int i = 0; i < 32; i++)
+		printf("%02hhx", digest[i]);
+	putchar('\n');
 	
-	struct auth_data auth;
-
-
-	
-	unsigned char mac1[32] = {0x1d, 0xa2, 0x62, 0xb5, 0x67, 0xba, 0x13,
-		0x24, 0xb5, 0x55, 0xf7, 0x36, 0xc1, 0x40, 0x00, 0x0c, 0x72,
-		0xeb, 0x75, 0xaa, 0x08, 0xe4, 0x39, 0xd1, 0x22, 0x67, 0xb1,
-		0xf9, 0x5c, 0x43, 0x4e, 0xfc};
-	unsigned char msg1[12] = "UNLOCK_FLAG1";
-
-	memcpy(auth.digest, mac1, 32);
-	memcpy(auth.message, msg1, 12);
-	auth.message_len = 12;
-
-	if (flag_auth(&auth))
-		goto fail_auth;
-	
-	const char *flag1;
-	if (!(flag1 = get_flag1()))
-		goto fail_auth;
-
-	printf("Flag1: %s\n", flag1);
-
-	uint32_t h[8];
-	for (int i = 0; i < 8; i++)
-		h[i] = (mac1[4*i] << 24) | (mac1[4*i+1] << 16) | (mac1[4*i+2] << 8) | mac1[4*i+3];
-	add_chunk(h, extension);
-	unsigned char mac2[32];
-	for (int i = 0; i < 8; i++) {
-		mac2[4*i] = h[i] >> 24;
-		mac2[4*i+1] = h[i] >> 16;
-		mac2[4*i+2] = h[i] >> 8;
-		mac2[4*i+3] = h[i];
-	}
-
-	printf("h = { 0x%x, 0x%x, 0x%x, 0x%x, 0x%x, 0x%x, 0x%x, 0x%x }\n", h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]);
-
-	memcpy(auth.digest, mac2, 32);
-	memcpy(auth.message, payload, payload_len);
-	auth.message_len = payload_len;
-
-	
-
-	if (flag_auth(&auth))
-		goto fail_auth;
-	
-	const char *flag2;
-	if (!(flag2 = get_flag2()))
-		goto fail_auth;
-
-	printf("Flag2: %s\n", flag2);
-
-
-
-fail_auth:
-	flag_close();
-fail_open:
-	return result;
 }

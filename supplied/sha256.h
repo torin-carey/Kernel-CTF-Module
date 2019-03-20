@@ -1,11 +1,7 @@
 #ifndef H_SHA256
 #define H_SHA256
 
-#ifdef __KERNEL__
-#include <linux/types.h>
-#else
 #include <stdint.h>
-#endif
 
 struct sha256_state {
 	uint32_t h[8];

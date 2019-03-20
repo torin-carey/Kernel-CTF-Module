@@ -21,17 +21,20 @@ struct auth_data {
 
 #define MYMAGIC 105
 
-// I promise the null terminated flags will not be longer than this
+// The null terminated flags will not be longer than this
 #define FLAG_MAX_LEN 64
 
-/* Both GET_FLAGs will fail wuth EPERM if the appropriate flag hasn't been
+/* GET_FLAG1 and GET_FLAG2 will fail with EPERM if the appropriate flag hasn't been
  * unlocked with AUTHENTICATE */
 
-// Requires UNLOCK_FLAG1
+// Does not require any authentication
 #define IOCTL_GET_FLAG1 _IOR(MYMAGIC, 16, char *)
 
 // Requires UNLOCK_FLAG2
 #define IOCTL_GET_FLAG2 _IOR(MYMAGIC, 17, char *)
+
+// Requires UNLOCK_FLAG3
+#define IOCTL_GET_FLAG3 _IOR(MYMAGIC, 18, char *)
 
 /* AUTHENTICATE will fail with EPERM if the message doesn't have
  * a valid MAC */

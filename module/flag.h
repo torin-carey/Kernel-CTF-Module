@@ -8,5 +8,6 @@ static unsigned char key[] = {
 
 static const char flag1[] = "flag1{36772d92cfe923ba220ac5379e7e570b}";
 static const char flag2[] = "flag2{3f769e5dc4f6a5488defcaedf14303e6}";
+static const char flag3[] = "flag3{6bce8ff97870fa9a0ab7fafc8fecb2e3}";
 
 #endif // H_FLAG

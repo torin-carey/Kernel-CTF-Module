@@ -15,8 +15,8 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
 
-#define FLAG_FLAG1 1
-#define FLAG_FLAG2 2
+#define FLAG_FLAG2 1
+#define FLAG_FLAG3 2
 
 struct file_state {
 	int auth;
@@ -87,10 +87,6 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		return -EINTR;
 	switch (cmd) {
 	case IOCTL_GET_FLAG1:
-		if (!(state->auth & FLAG_FLAG1)) {
-			ret = -EPERM;
-			goto finish;
-		}
 		ret = copy_to_user((char *)arg, flag1, sizeof(flag1));
 		ret = sizeof(flag1) - ret;
 		goto finish;
@@ -101,6 +97,14 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		}
 		ret = copy_to_user((char *)arg, flag2, sizeof(flag2));
 		ret = sizeof(flag2) - ret;
+		goto finish;
+	case IOCTL_GET_FLAG3:
+		if (!(state->auth & FLAG_FLAG3)) {
+			ret = -EPERM;
+			goto finish;
+		}
+		ret = copy_to_user((char *)arg, flag3, sizeof(flag3));
+		ret = sizeof(flag3) - ret;
 		goto finish;
 	case IOCTL_AUTHENTICATE:
 		printk(KERN_DEBUG "authenticating data...\n");
@@ -122,12 +126,12 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 				mptr = eptr;
 
 			if (mptr - sptr == 12) {
-				if (!memcmp(sptr, "UNLOCK_FLAG1", 12)) {
-					printk(KERN_INFO "flag1 unlocked\n");
-					state->auth |= FLAG_FLAG1;
-				} else if (!memcmp(sptr, "UNLOCK_FLAG2", 12)) {
+				if (!memcmp(sptr, "UNLOCK_FLAG2", 12)) {
 					printk(KERN_INFO "flag2 unlocked\n");
 					state->auth |= FLAG_FLAG2;
+				} else if (!memcmp(sptr, "UNLOCK_FLAG3", 12)) {
+					printk(KERN_INFO "flag3 unlocked\n");
+					state->auth |= FLAG_FLAG3;
 				}
 			}
 			sptr = mptr + 1;
@@ -162,7 +166,7 @@ static int mod_uevent(struct device *dev, struct kobj_uevent_env *env) {
 static dev_t mod_dev = 0;
 static struct class mod_class = {
 	.owner = THIS_MODULE,
-	.name = "myflag",
+	.name = "ctf",
 	.dev_uevent = mod_uevent,
 };
 static struct cdev *mod_cdev;
@@ -171,7 +175,7 @@ static int __init mod_init(void) {
 	int result;
 	printk(KERN_DEBUG "initialising module\n");
 
-	result = alloc_chrdev_region(&mod_dev, 0, 1, "mod_cdev");
+	result = alloc_chrdev_region(&mod_dev, 0, 1, "ctfmod");
 	if (result < 0) {
 		printk(KERN_ERR "failed to alloc chrdev region\n");
 		goto fail_alloc_region;
