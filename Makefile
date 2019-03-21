@@ -8,12 +8,12 @@ all: modules getflag
 
 modules:
 	make -C module/ $@
-	ln -s module/flagmod.ko .
+	ln -fs module/ctfmod.ko .
 
 clean:
 	make -C module/ $@
-	make -C supplied/ $@
-	rm -f flagmod.ko
+	make -C solutions/ $@
+	rm -f ctfmod.ko
 
 getflag:
-	make -C supplied/ $@
+	make -C solutions/ $@
