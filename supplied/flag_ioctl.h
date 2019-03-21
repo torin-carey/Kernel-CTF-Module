@@ -24,7 +24,7 @@ struct auth_data {
 // The null terminated flags will not be longer than this
 #define FLAG_MAX_LEN 64
 
-/* GET_FLAG1 and GET_FLAG2 will fail with EPERM if the appropriate flag hasn't been
+/* GET_FLAG2 and GET_FLAG3 will fail with EPERM if the appropriate flag hasn't been
  * unlocked with AUTHENTICATE */
 
 // Does not require any authentication
