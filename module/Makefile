@@ -1,6 +1,6 @@
-obj-m := flagmod.o
+obj-m := ctfmod.o
 
-flagmod-objs := flag.o sha256.o
+ctfmod-objs := flag.o sha256.o
 
 .PHONY: all
 

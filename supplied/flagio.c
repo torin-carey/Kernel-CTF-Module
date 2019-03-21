@@ -47,13 +47,7 @@ const char *get_flag1(void) {
 	static char flag1[FLAG_MAX_LEN];
 	ret = ioctl(dev_flag_fd, IOCTL_GET_FLAG1, (unsigned long)flag1);
 	if (ret == -1) {
-		switch (errno) {
-		case EPERM:
-			fputs("Failed to get flag1: Not authorized\n", stderr);
-			break;
-		default:
-			fprintf(stderr, "Failed to get flag1: %m\n", stderr);
-		}
+		fprintf(stderr, "Failed to get flag1: %m\n", stderr);
 		return NULL;
 	}
 	return flag1;
@@ -74,4 +68,21 @@ const char *get_flag2(void) {
 		return NULL;
 	}
 	return flag2;
+}
+
+const char *get_flag3(void) {
+	int ret;
+	static char flag3[FLAG_MAX_LEN];
+	ret = ioctl(dev_flag_fd, IOCTL_GET_FLAG3, (unsigned long)flag3);
+	if (ret == -1) {
+		switch (errno) {
+		case EPERM:
+			fputs("Failed to get flag3: Not authorized\n", stderr);
+			break;
+		default:
+			fprintf(stderr, "Failed to get flag3: %m\n", stderr);
+		}
+		return NULL;
+	}
+	return flag3;
 }
