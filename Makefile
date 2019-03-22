@@ -1,4 +1,4 @@
-.PHONY: all module clean suppliedfiles
+.PHONY: all module clean purge
 
 moduledir := module
 supplieddir := supplied
@@ -16,7 +16,7 @@ $(supplieddir)/%: $(moduledir)/% | $(supplieddir)
 $(supplieddir):
 	mkdir -p $@
 
-clean:
+clean purge:
 	make -C $(moduledir)/ $@
 	rm -f ctfmod.ko flag2gen
-	rm -r $(supplieddir)
+	rm -rf $(supplieddir)
