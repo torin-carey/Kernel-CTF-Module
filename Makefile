@@ -1,15 +1,22 @@
-.PHONY: all modules clean
+.PHONY: all module clean suppliedfiles
 
-all: modules getflag
+moduledir := module
+supplieddir := supplied
+copyfiles := sha256.h sha256.c ioctl.h flag2
 
-modules:
-	make -C module/ $@
-	ln -fs module/ctfmod.ko .
+all: module $(addprefix $(supplieddir)/,$(copyfiles))
+
+module:
+	make -C $(moduledir)/ $@
+	ln -fs $(moduledir)/ctfmod.ko .
+
+$(supplieddir)/%: $(moduledir)/% | $(supplieddir)
+	cp $< $@
+
+$(supplieddir):
+	mkdir -p $@
 
 clean:
-	make -C module/ $@
-	make -C solutions/ $@
-	rm -f ctfmod.ko
-
-getflag:
-	make -C solutions/ $@
+	make -C $(moduledir)/ $@
+	rm -f ctfmod.ko flag2gen
+	rm -r $(supplieddir)

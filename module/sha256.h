@@ -5,7 +5,7 @@
 #include <linux/types.h>
 #else
 #include <stdint.h>
-#endif
+#endif // __KERNEL__
 
 struct sha256_state {
 	uint32_t h[8];
