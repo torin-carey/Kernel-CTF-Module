@@ -10,34 +10,36 @@
 #endif
 
 struct auth_data {
-	// The Message Authentication Code. The SHA-256 hash of the 128-bit key concatenated with the message
+	/* The SHA-256 hash of the 128-bit key concatenated with the message */
 	unsigned char digest[32];
-	// Length of data in message
+	/* The length in bytes of the message */
 	unsigned int message_len;
-	// Null delimited list of commands. Unknown commands will be silently ignored
-	// e.g. 'COMMAND1\0COMMAND2\0UNLOCK_FLAG1'
+	/* The null byte delimited list of messages. Unknown items in the list
+	   will be silently ignored. e.g. 'UNLOCK_FLAG1\0COMMAND_1\0COMMAND_2 */
 	char message[128];
 };
 
-#define MYMAGIC 105
+#define FLAG_MAGIC 105
 
-// The null terminated flags will not be longer than this
+/* The maximum length of the null terminated string returned by the GET_FLAG ioctls */
 #define FLAG_MAX_LEN 64
 
 /* GET_FLAG1 and GET_FLAG2 will fail with EPERM if the appropriate flag hasn't been
  * unlocked with AUTHENTICATE */
 
-// Does not require any authentication
-#define IOCTL_GET_FLAG1 _IOR(MYMAGIC, 16, char *)
+/* Gets flag1. Does not require any unlocking */
+#define IOCTL_GET_FLAG1 _IOR(FLAG_MAGIC, 16, char *)
 
-// Requires UNLOCK_FLAG2
-#define IOCTL_GET_FLAG2 _IOR(MYMAGIC, 17, char *)
+/* Gets flag2. Requires 'UNLOCK_FLAG2' */
+#define IOCTL_GET_FLAG2 _IOR(FLAG_MAGIC, 17, char *)
 
-// Requires UNLOCK_FLAG3
-#define IOCTL_GET_FLAG3 _IOR(MYMAGIC, 18, char *)
+/* Gets flag3. Requires 'UNLOCK_FLAG3' */
+#define IOCTL_GET_FLAG3 _IOR(FLAG_MAGIC, 18, char *)
 
-/* AUTHENTICATE will fail with EPERM if the message doesn't have
- * a valid MAC */
-#define IOCTL_AUTHENTICATE _IOW(MYMAGIC, 8, struct auth_data *)
+/* Sends an authenticated message to the driver. Message contains zero or more
+   instructions, such as 'UNLOCK_FLAG2'. Multiple calls to AUTHENTICATE are
+   permitted and previously unlocked flags will still be unlocked. Unknown flags
+   are silently ignored. */
+#define IOCTL_AUTHENTICATE _IOW(FLAG_MAGIC, 8, struct auth_data *)
 
 #endif // H_FLAGIOCTL

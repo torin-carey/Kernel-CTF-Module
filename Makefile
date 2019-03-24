@@ -4,11 +4,13 @@ moduledir := module
 supplieddir := supplied
 copyfiles := sha256.h sha256.c ioctl.h flag2
 
-all: module $(addprefix $(supplieddir)/,$(copyfiles))
+all: module $(addprefix $(supplieddir)/,$(copyfiles)) ctfmod.ko
+
+ctfmod.ko: $(moduledir)/ctfmod.ko
+	ln -f $< $@
 
 module:
 	make -C $(moduledir)/ $@
-	ln -fs $(moduledir)/ctfmod.ko .
 
 $(supplieddir)/%: $(moduledir)/% | $(supplieddir)
 	cp $< $@
