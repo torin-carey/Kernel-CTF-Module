@@ -24,7 +24,7 @@ struct auth_data {
 /* The maximum length of the null terminated string returned by the GET_FLAG ioctls */
 #define FLAG_MAX_LEN 64
 
-/* GET_FLAG1 and GET_FLAG2 will fail with EPERM if the appropriate flag hasn't been
+/* GET_FLAG2 and GET_FLAG3 will fail with EPERM if the appropriate flag hasn't been
  * unlocked with AUTHENTICATE */
 
 /* Gets flag1. Does not require any unlocking */

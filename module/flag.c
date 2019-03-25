@@ -84,7 +84,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 	state = (struct file_state *)file->private_data;
 
 	if (down_interruptible(&state->sem))
-		return -EINTR;
+		return -ERESTARTSYS;
 	switch (cmd) {
 	case IOCTL_GET_FLAG1:
 		ret = copy_to_user((char *)arg, flag1, sizeof(flag1));
