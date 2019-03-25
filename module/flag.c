@@ -5,7 +5,7 @@
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
-#include <linux/semaphore.h>
+#include <asm/bitops.h>
 
 #include "ioctl.h"
 #include "sha256.h"
@@ -19,8 +19,7 @@ MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
 #define FLAG_FLAG3 2
 
 struct file_state {
-	int auth;
-	struct semaphore sem;
+	volatile unsigned long auth;
 };
 
 static const char mymessage[] = "Nothing to see here...\n";
@@ -34,7 +33,6 @@ static int mod_open(struct inode *inode, struct file *file) {
 		return -ENOMEM;
 	}
 	state->auth = 0;
-	sema_init(&state->sem, 1);
 	file->private_data = (void *)state;
 	return 0;
 }
@@ -83,15 +81,13 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 	void *sptr, *mptr, *eptr;
 	state = (struct file_state *)file->private_data;
 
-	if (down_interruptible(&state->sem))
-		return -ERESTARTSYS;
 	switch (cmd) {
 	case IOCTL_GET_FLAG1:
 		ret = copy_to_user((char *)arg, flag1, sizeof(flag1));
 		ret = sizeof(flag1) - ret;
 		goto finish;
 	case IOCTL_GET_FLAG2:
-		if (!(state->auth & FLAG_FLAG2)) {
+		if (!test_bit(FLAG_FLAG2, &state->auth)) {
 			ret = -EPERM;
 			goto finish;
 		}
@@ -99,7 +95,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		ret = sizeof(flag2) - ret;
 		goto finish;
 	case IOCTL_GET_FLAG3:
-		if (!(state->auth & FLAG_FLAG3)) {
+		if (!test_bit(FLAG_FLAG3, &state->auth)) {
 			ret = -EPERM;
 			goto finish;
 		}
@@ -128,10 +124,10 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 			if (mptr - sptr == 12) {
 				if (!memcmp(sptr, "UNLOCK_FLAG2", 12)) {
 					printk(KERN_INFO "flag2 unlocked\n");
-					state->auth |= FLAG_FLAG2;
+					set_bit(FLAG_FLAG2, &state->auth);
 				} else if (!memcmp(sptr, "UNLOCK_FLAG3", 12)) {
 					printk(KERN_INFO "flag3 unlocked\n");
-					state->auth |= FLAG_FLAG3;
+					set_bit(FLAG_FLAG3, &state->auth);
 				}
 			}
 			sptr = mptr + 1;
@@ -143,7 +139,6 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 		ret = -EINVAL;
 	}
 finish:
-	up(&state->sem);
 	return ret;
 }
 
