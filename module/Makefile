@@ -22,5 +22,5 @@ purge: clean
 flag2gen: flag2gen.c sha256.c
 	gcc -o $@ $^
 
-flag2: | flag2gen
-	./$| > $@
+flag2: flag.h | flag2gen
+	./flag2gen > $@
