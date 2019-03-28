@@ -27,7 +27,8 @@ static const uint32_t k[64] = {
 
 static const uint32_t initial_h[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
-void sha256_init(struct sha256_state *state) {
+void sha256_init(struct sha256_state *state)
+{
 	int i;
 	for (i = 0; i < 8; i++)
 		state->h[i] = initial_h[i];
@@ -36,7 +37,8 @@ void sha256_init(struct sha256_state *state) {
 }
 
 
-void sha256_update(struct sha256_state *state, const unsigned char *data, unsigned int len) {
+void sha256_update(struct sha256_state *state, const unsigned char *data, unsigned int len)
+{
 	unsigned int r;
 	if (state->size) {
 		r = min(64 - state->size, len);
@@ -64,7 +66,8 @@ void sha256_update(struct sha256_state *state, const unsigned char *data, unsign
 	}
 }
 
-void sha256_final(struct sha256_state *state, unsigned char *digest) {
+void sha256_final(struct sha256_state *state, unsigned char *digest)
+{
 	int i;
 	unsigned char buf[72];
 	unsigned long size;
@@ -84,7 +87,8 @@ void sha256_final(struct sha256_state *state, unsigned char *digest) {
 	}
 }
 
-void add_chunk(uint32_t *h, const unsigned char *chunk) {
+void add_chunk(uint32_t *h, const unsigned char *chunk)
+{
 	int i;
 	uint32_t w[64];
 	uint32_t la, lb, lc, ld, le, lf, lg, lh;

@@ -24,7 +24,8 @@ struct file_state {
 
 static const char mymessage[] = "Nothing to see here...\n";
 
-static int mod_open(struct inode *inode, struct file *file) {
+static int mod_open(struct inode *inode, struct file *file)
+{
 	struct file_state *state;
 	
 	state = kmalloc(sizeof(struct file_state), GFP_KERNEL);
@@ -37,12 +38,14 @@ static int mod_open(struct inode *inode, struct file *file) {
 	return 0;
 }
 
-static int mod_release(struct inode *inode, struct file *file) {
+static int mod_release(struct inode *inode, struct file *file)
+{
 	kfree(file->private_data);
 	return 0;
 }
 
-static ssize_t mod_read(struct file *file, char __user *data, size_t size, loff_t *offset) {
+static ssize_t mod_read(struct file *file, char __user *data, size_t size, loff_t *offset)
+{
 	unsigned int avail;
 	unsigned long f;
 	if (*offset >= sizeof(mymessage) || *offset < 0)
@@ -55,11 +58,13 @@ static ssize_t mod_read(struct file *file, char __user *data, size_t size, loff_
 	return avail;
 }
 
-static ssize_t mod_write(struct file *file, const char __user *data, size_t size, loff_t *offset) {
+static ssize_t mod_write(struct file *file, const char __user *data, size_t size, loff_t *offset)
+{
 	return -EPERM;
 }
 
-static int authenticate(const struct auth_data *auth) {
+static int authenticate(const struct auth_data *auth)
+{
 	struct sha256_state state;
 	unsigned char digest[32];
 	int ret;
@@ -73,7 +78,8 @@ static int authenticate(const struct auth_data *auth) {
 	return ret ? -EPERM : 0;
 }
 
-static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
+static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
 	unsigned long ret;
 
 	struct auth_data auth;
@@ -153,7 +159,8 @@ static struct file_operations mod_fops = {
 	.llseek = no_llseek,
 };
 
-static int mod_uevent(struct device *dev, struct kobj_uevent_env *env) {
+static int mod_uevent(struct device *dev, struct kobj_uevent_env *env)
+{
 	add_uevent_var(env, "DEVMODE=%#o", 0444);
 	return 0;
 }
@@ -166,7 +173,8 @@ static struct class mod_class = {
 };
 static struct cdev *mod_cdev;
 
-static int __init mod_init(void) {
+static int __init mod_init(void)
+{
 	int result;
 	printk(KERN_DEBUG "initialising module\n");
 
@@ -204,7 +212,8 @@ fail_alloc_region:
 	return result;
 }
 
-static void __exit mod_exit(void) {
+static void __exit mod_exit(void)
+{
 	printk(KERN_DEBUG "exiting module\n");
 	device_destroy(&mod_class, mod_dev);
 	class_unregister(&mod_class);
