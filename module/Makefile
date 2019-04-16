@@ -4,7 +4,7 @@ ctfmod-objs := flag.o sha256.o
 
 .PHONY: module modules clean purge
 
-module: flag.h modules flag2
+module: flag.h modules flag2 loader
 
 flag.h:
 	./gen_flag.sh > $@
@@ -13,7 +13,7 @@ modules:
 	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
 
 clean:
-	rm -f flag2gen
+	rm -f flag2gen loader
 	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
 
 purge: clean
@@ -24,3 +24,6 @@ flag2gen: flag2gen.c sha256.c
 
 flag2: flag.h | flag2gen
 	./flag2gen > $@
+
+loader: loader.c flag.h ioctl.h
+	gcc -o $@ $<

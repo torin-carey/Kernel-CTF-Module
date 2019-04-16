@@ -21,8 +21,8 @@ struct auth_data {
 
 #define FLAG_MAGIC 105
 
-/* The maximum length of the null terminated string returned by the GET_FLAG ioctls */
-#define FLAG_MAX_LEN 64
+/* Length of the null terminated strings returned by the GET_FLAG ioctls */
+#define FLAG_LEN 40
 
 /* GET_FLAG2 and GET_FLAG3 will fail with EPERM if the appropriate flag hasn't been
  * unlocked with AUTHENTICATE */
@@ -41,5 +41,14 @@ struct auth_data {
    permitted and previously unlocked flags will still be unlocked. Unknown flags
    are silently ignored. */
 #define IOCTL_AUTHENTICATE _IOW(FLAG_MAGIC, 8, struct auth_data *)
+
+struct flag_key {
+	char flag[3][FLAG_LEN];
+	unsigned char key[16];
+};
+
+#define IOCTL_LOAD_SECRETS _IOW(FLAG_MAGIC, 4, struct flag_key *)
+
+#define IOCTL_CHECK_STATUS _IO(FLAG_MAGIC, 33)
 
 #endif // H_FLAGIOCTL
