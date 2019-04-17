@@ -6,7 +6,7 @@ genflag() {
 	head -c 16 /dev/urandom | xxd -p
 }
 
-KEY=`head -c 16 /dev/urandom | xxd -i`
+KEY=`head -c 16 /dev/urandom | xxd -c 8 -i`
 
 FLAG1="flag1{`genflag`}"
 FLAG2="flag2{`genflag`}"
