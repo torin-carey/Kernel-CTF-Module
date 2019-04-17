@@ -102,8 +102,11 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -EBUSY;
 			goto finish;
 		}
-		ret = copy_to_user((char *)arg, secrets.flag[0], FLAG_LEN);
-		ret = FLAG_LEN - ret;
+		if (copy_to_user((char *)arg, secrets.flag[0], FLAG_LEN)) {
+			ret = -EFAULT;
+			goto finish;
+		}
+		ret = 0;
 		goto finish;
 	case IOCTL_GET_FLAG2:
 		if (atomic_read(&dev_state) != STATE_READY) {
@@ -114,8 +117,11 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -EPERM;
 			goto finish;
 		}
-		ret = copy_to_user((char *)arg, secrets.flag[1], FLAG_LEN);
-		ret = FLAG_LEN - ret;
+		if (copy_to_user((char *)arg, secrets.flag[1], FLAG_LEN)) {
+			ret = -EFAULT;
+			goto finish;
+		}
+		ret = 0;
 		goto finish;
 	case IOCTL_GET_FLAG3:
 		if (atomic_read(&dev_state) != STATE_READY) {
@@ -126,8 +132,11 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -EPERM;
 			goto finish;
 		}
-		ret = copy_to_user((char *)arg, secrets.flag[2], FLAG_LEN);
-		ret = FLAG_LEN - ret;
+		if (copy_to_user((char *)arg, secrets.flag[2], FLAG_LEN)) {
+			ret = -EFAULT;
+			goto finish;
+		}
+		ret = 0;
 		goto finish;
 	case IOCTL_AUTHENTICATE:
 		if (atomic_read(&dev_state) != STATE_READY) {
