@@ -23,7 +23,7 @@ int main(void) {
 	memcpy(fk.flag[2], flag3, FLAG_LEN);
 	memcpy(fk.key, key, 16);
 
-	if (ioctl(fd, IOCTL_LOAD_SECRETS, &fk) == -1) {
+	if (ioctl(fd, CTFMOD_LOAD_SECRETS, &fk) == -1) {
 		ret = errno;
 		fprintf(stderr, "Failed to load secrets: %m\n");
 		goto rel_dev;

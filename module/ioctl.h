@@ -28,27 +28,27 @@ struct auth_data {
  * unlocked with AUTHENTICATE */
 
 /* Gets flag1. Does not require any unlocking */
-#define IOCTL_GET_FLAG1 _IOR(FLAG_MAGIC, 16, char *)
+#define CTFMOD_GET_FLAG1 _IOR(FLAG_MAGIC, 16, char *)
 
 /* Gets flag2. Requires 'UNLOCK_FLAG2' */
-#define IOCTL_GET_FLAG2 _IOR(FLAG_MAGIC, 17, char *)
+#define CTFMOD_GET_FLAG2 _IOR(FLAG_MAGIC, 17, char *)
 
 /* Gets flag3. Requires 'UNLOCK_FLAG3' */
-#define IOCTL_GET_FLAG3 _IOR(FLAG_MAGIC, 18, char *)
+#define CTFMOD_GET_FLAG3 _IOR(FLAG_MAGIC, 18, char *)
 
 /* Sends an authenticated message to the driver. Message contains zero or more
    instructions, such as 'UNLOCK_FLAG2'. Multiple calls to AUTHENTICATE are
    permitted and previously unlocked flags will still be unlocked. Unknown flags
    are silently ignored. */
-#define IOCTL_AUTHENTICATE _IOW(FLAG_MAGIC, 8, struct auth_data *)
+#define CTFMOD_AUTHENTICATE _IOW(FLAG_MAGIC, 8, struct auth_data *)
 
 struct flag_key {
 	char flag[3][FLAG_LEN];
 	unsigned char key[16];
 };
 
-#define IOCTL_LOAD_SECRETS _IOW(FLAG_MAGIC, 4, struct flag_key *)
+#define CTFMOD_LOAD_SECRETS _IOW(FLAG_MAGIC, 4, struct flag_key *)
 
-#define IOCTL_CHECK_STATUS _IO(FLAG_MAGIC, 33)
+#define CTFMOD_CHECK_STATUS _IO(FLAG_MAGIC, 33)
 
 #endif // H_FLAGIOCTL

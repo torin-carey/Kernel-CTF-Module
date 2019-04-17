@@ -97,7 +97,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	state = (struct file_state *)file->private_data;
 
 	switch (cmd) {
-	case IOCTL_GET_FLAG1:
+	case CTFMOD_GET_FLAG1:
 		if (atomic_read(&dev_state) != STATE_READY) {
 			ret = -EBUSY;
 			goto finish;
@@ -108,7 +108,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		ret = 0;
 		goto finish;
-	case IOCTL_GET_FLAG2:
+	case CTFMOD_GET_FLAG2:
 		if (atomic_read(&dev_state) != STATE_READY) {
 			ret = -EBUSY;
 			goto finish;
@@ -123,7 +123,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		ret = 0;
 		goto finish;
-	case IOCTL_GET_FLAG3:
+	case CTFMOD_GET_FLAG3:
 		if (atomic_read(&dev_state) != STATE_READY) {
 			ret = -EBUSY;
 			goto finish;
@@ -138,7 +138,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		ret = 0;
 		goto finish;
-	case IOCTL_AUTHENTICATE:
+	case CTFMOD_AUTHENTICATE:
 		if (atomic_read(&dev_state) != STATE_READY) {
 			ret = -EBUSY;
 			goto finish;
@@ -174,7 +174,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		ret = 0;
 		goto finish;
-	case IOCTL_LOAD_SECRETS:
+	case CTFMOD_LOAD_SECRETS:
 		printk(KERN_DEBUG "ctfmod: attempting LOAD_SECRETS\n");
 		kuid = make_kuid(current_user_ns(), 0);
 		if (!uid_eq(current_cred()->uid, kuid) && !capable(CAP_SYS_ADMIN)) {
@@ -206,7 +206,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ret = 0;
 		printk(KERN_DEBUG "ctfmod: LOAD_SECRETS succeeded\n");
 		goto rel_state_lock;;
-	case IOCTL_CHECK_STATUS:
+	case CTFMOD_CHECK_STATUS:
 		ret = atomic_read(&dev_state) == STATE_READY ? 0 : -EBUSY;
 		goto finish;
 	default:
