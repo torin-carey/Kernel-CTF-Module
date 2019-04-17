@@ -1,13 +1,3 @@
 ctfmod.ko
+loader
 supplied/
-module/.*
-module/*.o
-module/flag.h
-module/flag2
-module/Module.symvers
-module/ctfmod.ko
-module/ctfmod.mod.c
-module/flag.o
-module/modules.order
-module/flag2gen
-module/loader

@@ -1,0 +1,10 @@
+.*                                                                             
+*.o                                                                            
+flag.h                                                                         
+flag2                                                                          
+Module.symvers                                                                 
+ctfmod.ko                                                                      
+ctfmod.mod.c                                                                   
+modules.order                                                                  
+flag2gen                                                                       
+loader
