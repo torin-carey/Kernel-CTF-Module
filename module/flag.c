@@ -125,7 +125,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		goto finish;
 	case IOCTL_GET_FLAG3:
 		if (atomic_read(&dev_state) != STATE_READY) {
-			ret = -EIO;
+			ret = -EBUSY;
 			goto finish;
 		}
 		if (!test_bit(FLAG_FLAG3, &state->auth)) {
@@ -189,12 +189,12 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		if (atomic_read(&dev_state) == STATE_READY) {
 			printk(KERN_DEBUG "ctfmod: LOAD_SECRETS failed: already initialised\n");
-			ret = -EIO;
+			ret = -EBUSY;
 			goto rel_state_lock;
 		}
 		if (copy_from_user(&secrets, (void *)arg, sizeof(struct flag_key))) {
 			printk(KERN_DEBUG "ctfmod: LOAD_SECRETS failed: could not obtain struct\n");
-			ret = -EINVAL;
+			ret = -EFAULT;
 			goto rel_state_lock;;
 		}
 		printk(KERN_DEBUG "ctfmod: loaded flag1: %*pE\n", FLAG_LEN, secrets.flag[0]);
