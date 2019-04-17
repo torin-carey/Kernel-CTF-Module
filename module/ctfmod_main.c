@@ -31,7 +31,7 @@ struct file_state {
 	volatile unsigned long auth;
 };
 
-static const char mymessage[] = "Nothing to see here...\n";
+static const char mymessage[] = "Nothing to see here... (see ctfmod(4))\n";
 
 static int mod_open(struct inode *inode, struct file *file)
 {
