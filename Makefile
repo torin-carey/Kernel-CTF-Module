@@ -1,15 +1,17 @@
-.PHONY: all module loader clean purge install uninstall
+.PHONY: all module loader docs clean purge install uninstall
 
 CWD := $(shell pwd)
 
 MODULEDIR := $(CWD)/module
 INCLUDEDIR := $(CWD)/include
 LIBDIR := $(CWD)/lib
+DOCDIR := $(CWD)/docs
 
 CFLAGS := -I"$(INCLUDEDIR)"
 
 export CFLAGS
-all: module loader flags
+
+all: module loader docs flags
 
 flags:
 	$(LIBDIR)/genflags.sh >$@
@@ -23,6 +25,7 @@ module:
 clean:
 	make -C $(MODULEDIR)/ $@
 	make -C $(LIBDIR)/ $@
+	make -C $(DOCDIR)/ $@
 
 purge: clean
 	rm -f flags
