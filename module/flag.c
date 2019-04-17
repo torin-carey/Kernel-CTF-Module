@@ -202,6 +202,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		goto finish;
 	default:
 		ret = -ENOTTY;
+		goto finish;
 	}
 rel_state_lock:
 	mutex_unlock(&state_lock);
