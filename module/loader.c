@@ -10,7 +10,7 @@
 
 int main(void) {
 	int ret;
-	int fd = open("/dev/flag", O_RDWR);
+	int fd = open("/dev/flag", O_RDONLY);
 	if (fd == -1) {
 		ret = errno;
 		fprintf(stderr, "Failed to open device: %m\n");
