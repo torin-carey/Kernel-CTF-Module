@@ -7,3 +7,5 @@ ctfmod.4: ctfmod.md
 
 clean purge:
 	rm -f $(TARGETS)
+
+.PHONY: docs clean purge
