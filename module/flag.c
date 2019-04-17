@@ -15,7 +15,7 @@
 #include "sha256.h"
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Torin Carey <tcarey1@sheffield.ac.uk>");
+MODULE_AUTHOR("Torin Carey <torin@tcarey.uk>");
 
 #define STATE_UNINIT 0
 #define STATE_READY  1
