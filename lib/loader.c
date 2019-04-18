@@ -68,19 +68,19 @@ int main(void)
 
 	ret = 0;
 	if (!flag1) {
-		fprintf(stderr, "missing FLAG1\n");
+		fprintf(stderr, "missing " ENV_FLAG1 "\n");
 		ret = -1;
 	}
 	if (!flag2) {
-		fprintf(stderr, "missing FLAG2\n");
+		fprintf(stderr, "missing " ENV_FLAG2 "\n");
 		ret = -1;
 	}
 	if (!flag3) {
-		fprintf(stderr, "missing FLAG3\n");
+		fprintf(stderr, "missing " ENV_FLAG3 "\n");
 		ret = -1;
 	}
 	if (!key) {
-		fprintf(stderr, "missing KEY\n");
+		fprintf(stderr, "missing " ENV_KEY "\n");
 		ret = -1;
 	}
 	if (ret)
