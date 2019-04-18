@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
-#include "ioctl.h"
+#include "ctfmod.h"
 #include "flag.h"
 
 int main(void) {

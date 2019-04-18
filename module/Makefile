@@ -25,5 +25,5 @@ flag2gen: flag2gen.c sha256.c
 flag2: flag.h | flag2gen
 	./flag2gen > $@
 
-loader: loader.c flag.h ioctl.h
+loader: loader.c flag.h ctfmod.h
 	gcc -o $@ $<

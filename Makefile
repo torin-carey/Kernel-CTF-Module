@@ -2,12 +2,12 @@
 
 moduledir := module
 supplieddir := supplied
-copyfiles := sha256.h sha256.c ioctl.h flag2
+copyfiles := sha256.h sha256.c ctfmod.h flag2
 
 all: module $(addprefix $(supplieddir)/,$(copyfiles)) ctfmod.ko loader
 
 ctfmod.ko: $(moduledir)/ctfmod.ko
-	ln -f $< $@
+	strip --strip-unneeded -o $@ $<
 
 loader: $(moduledir)/loader
 	cp $< $@

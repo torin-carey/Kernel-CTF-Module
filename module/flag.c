@@ -11,7 +11,7 @@
 #include <linux/mutex.h>
 #include <linux/atomic.h>
 
-#include "ioctl.h"
+#include "ctfmod.h"
 #include "sha256.h"
 
 MODULE_LICENSE("GPL");
