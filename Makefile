@@ -22,6 +22,9 @@ loader:
 module:
 	make -C $(MODULEDIR)/ $@
 
+docs: flags
+	make -C $(DOCDIR)/ $@
+
 clean:
 	make -C $(MODULEDIR)/ $@
 	make -C $(LIBDIR)/ $@
@@ -36,6 +39,7 @@ install: all
 	install -T $(LIBDIR)/loader /usr/local/sbin/ctfmod-loader
 	install -m 0644 $(INCLUDEDIR)/ctfmod.h /usr/local/include/
 	install -m 0644 $(LIBDIR)/ctfmod-load-secrets.service /etc/systemd/system/
+	install -m 0644 -DT $(DOCDIR)/ctfmod.4 /usr/local/man/man4/ctfmod.4
 	install -m 0600 -o root -g root -T flags /etc/default/ctfmod-flags
 	rmmod ctfmod 2>/dev/null || true
 	modprobe ctfmod
@@ -44,10 +48,12 @@ install: all
 	systemctl start ctfmod-load-secrets.service
 
 uninstall:
-	systemctl disable ctfmod-load-secrets.service
-	rmmod ctfmod
+	systemctl disable ctfmod-load-secrets.service || true
+	rmmod ctfmod || true
 	rm -f /lib/modules/$(shell uname -r)/kernel/drivers/misc/ctfmod.ko \
 			/usr/local/sbin/ctfmod-loader \
 			/usr/local/include/ctfmod.h \
 			/etc/systemd/system/ctfmod-load-secrets.service \
+			/usr/local/man/man4/ctfmod.4 \
 			/etc/default/ctfmod-flags
+	rmdir --ignore-fail-on-non-empty /usr/local/man/man4/ 2>/dev/null || true
