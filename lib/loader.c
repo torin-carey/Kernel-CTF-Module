@@ -109,7 +109,13 @@ int main(void)
 
 	if (ioctl(fd, CTFMOD_LOAD_SECRETS, &fk) == -1) {
 		ret = errno;
-		fprintf(stderr, "failed to load secrets: %m\n");
+		switch (ret) {
+		case EBUSY:
+			fprintf(stderr, "failed to load secrets: already initialised\n");
+			break;
+		default:
+			fprintf(stderr, "failed to load secrets: %m\n");
+		}
 		goto rel_dev;
 	}
 	ret = 0;
