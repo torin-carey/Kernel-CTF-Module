@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
-#include "ctfmod.h"
+#include <ctfmod.h>
 
 #define ENV_FLAG1 "FLAG1"
 #define ENV_FLAG2 "FLAG2"

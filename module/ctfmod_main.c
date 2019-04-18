@@ -11,8 +11,8 @@
 #include <linux/mutex.h>
 #include <linux/atomic.h>
 
-#include "ctfmod.h"
-#include "sha256.h"
+#include <ctfmod.h>
+#include <sha256.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Torin Carey <torin@tcarey.uk>");

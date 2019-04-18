@@ -1,33 +1,36 @@
-.PHONY: all module clean purge install
+.PHONY: all module loader clean purge install
 
-moduledir := module
-supplieddir := supplied
-copyfiles := sha256.h sha256.c ctfmod.h flag2
+CWD := $(shell pwd)
 
-all: module $(addprefix $(supplieddir)/,$(copyfiles)) ctfmod.ko loader
+MODULEDIR := $(CWD)/module
+INCLUDEDIR := $(CWD)/include
+LIBDIR := $(CWD)/lib
 
-ctfmod.ko: $(moduledir)/ctfmod.ko
-	strip --strip-unneeded -o $@ $<
+CFLAGS := -I"$(INCLUDEDIR)"
 
-loader: $(moduledir)/loader
-	cp $< $@
+export CFLAGS
+all: module loader flags
+
+flags:
+	$(LIBDIR)/genflags.sh >$@
+
+loader:
+	make -C $(LIBDIR) loader
 
 module:
-	make -C $(moduledir)/ $@
+	make -C $(MODULEDIR)/ $@
 
-$(supplieddir)/%: $(moduledir)/% | $(supplieddir)
-	cp $< $@
+clean:
+	make -C $(MODULEDIR)/ $@
+	make -C $(LIBDIR)/ $@
 
-$(supplieddir):
-	mkdir -p $@
-
-clean purge:
-	make -C $(moduledir)/ $@
-	rm -f ctfmod.ko flag2gen loader
-	rm -rf $(supplieddir)
+purge: clean
+	rm -f flags
 
 install: all
-	install ctfmod.ko /lib/modules/$(shell uname -r)/kernel/drivers/misc/
-	install loader /usr/local/sbin/
-	install supplied/ctfmod.h /usr/local/include/
+	install -T $(MODULEDIR)/ctfmod-stripped.ko \
+		/lib/modules/$(shell uname -r)/kernel/drivers/misc/ctfmod.ko
+	install -T $(LIBDIR)/loader /usr/local/sbin/ctfmod-loader
+	install $(INCLUDEDIR)/ctfmod.h /usr/local/include/
+	install -m 0600 -o root -g root -T flags /etc/default/ctfmod-flags
 	modprobe ctfmod

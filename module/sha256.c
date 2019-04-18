@@ -1,12 +1,12 @@
-#include "sha256.h"
-
 #ifdef __KERNEL__
 #include <linux/string.h>
 #include <linux/module.h>
+#include <sha256.h>
 
 MODULE_LICENSE("GPL");
 #else
 #include <string.h>
+#include "sha256.h"
 
 #define min(a,b) (((a) > (b)) ? (b) : (a))
 #endif

@@ -1,29 +1,17 @@
 obj-m := ctfmod.o
 
-ctfmod-objs := flag.o sha256.o
+ctfmod-y := ctfmod_main.o sha256.o
+
+ccflags-y := $(CFLAGS)
 
 .PHONY: module modules clean purge
 
-module: flag.h modules flag2 loader
+module: ctfmod-stripped.ko
 
-flag.h:
-	./gen_flag.sh > $@
+ctfmod-stripped.ko: ctfmod.ko
+	strip --strip-unneeded -o $@ $<
+	
+ctfmod.ko: modules
 
-modules:
-	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
-
-clean:
-	rm -f flag2gen loader
-	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
-
-purge: clean
-	rm -f flag2 flag.h
-
-flag2gen: flag2gen.c sha256.c
-	gcc -o $@ $^
-
-flag2: flag.h | flag2gen
-	./flag2gen > $@
-
-loader: loader.c flag.h ctfmod.h
-	gcc -o $@ $<
+modules clean purge: 
+	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) CFLAGS="$(CFLAGS)" $@
