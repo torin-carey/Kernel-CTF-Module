@@ -7,7 +7,7 @@ INCLUDEDIR := $(CWD)/include
 LIBDIR := $(CWD)/lib
 DOCDIR := $(CWD)/docs
 
-CFLAGS := -I"$(INCLUDEDIR)"
+CFLAGS := -O2 -Wall -I"$(INCLUDEDIR)"
 
 export CFLAGS
 

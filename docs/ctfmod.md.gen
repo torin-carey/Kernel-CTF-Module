@@ -128,7 +128,7 @@ The following errors can be returned by **CTFMOD_LOAD_SECRETS**:
 
 # EXAMPLE
 
-An example use of obtaining flag2 with **getflag()** and **authenticate()**:
+Example code obtaining flag2 with **CTFMOD_AUTHENTICATE** and **CTFMOD_GET_FLAG2**:
 
 \`\`\`
 #include <ctfmod.h>
