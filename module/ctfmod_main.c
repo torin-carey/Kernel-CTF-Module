@@ -16,8 +16,6 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Torin Carey <torin@tcarey.uk>");
 
-#define CTFMOD_MINOR 242
-
 #define STATE_UNINIT 0
 #define STATE_READY  1
 
@@ -232,7 +230,7 @@ static struct file_operations mod_fops = {
 };
 
 static struct miscdevice mod_miscdev = {
-	.minor = CTFMOD_MINOR,
+	.minor = MISC_DYNAMIC_MINOR,
 	.name = "flag",
 	.fops = &mod_fops,
 };
