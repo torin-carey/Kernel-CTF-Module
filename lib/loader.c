@@ -39,7 +39,7 @@ int parse_key(unsigned char key[KEY_LEN], const char *str)
 		if (!pos)
 			continue;
 		if (i == KEY_LEN) {
-			fprintf(stderr, "key invalid: must be %zu bytes\n", KEY_LEN);
+			fprintf(stderr, "key invalid: must be %u bytes\n", KEY_LEN);
 			return -1;
 		}
 		if (b == -1) {
@@ -50,7 +50,7 @@ int parse_key(unsigned char key[KEY_LEN], const char *str)
 		}
 	}
 	if (i != KEY_LEN || b != -1) {
-		fprintf(stderr, "key invalid: must be %zu bytes\n", KEY_LEN);
+		fprintf(stderr, "key invalid: must be %u bytes\n", KEY_LEN);
 		return -1;
 	}
 	return 0;
