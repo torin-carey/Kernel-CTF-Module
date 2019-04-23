@@ -36,7 +36,7 @@ static const char mymessage[] = "Nothing to see here... (see ctfmod(4))\n";
 static int mod_open(struct inode *inode, struct file *file)
 {
 	struct file_state *state;
-	
+
 	state = kmalloc(sizeof(struct file_state), GFP_KERNEL);
 	if (!state) {
 		printk(KERN_ERR "ctfmod: open: failed to allocate memory\n");
