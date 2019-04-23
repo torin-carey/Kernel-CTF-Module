@@ -1,0 +1,1 @@
+KERNEL=="flag", MODE="0644"

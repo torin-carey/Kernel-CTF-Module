@@ -10,12 +10,15 @@
 #include <linux/sem.h>
 #include <linux/mutex.h>
 #include <linux/atomic.h>
+#include <linux/miscdevice.h>
 
 #include <ctfmod.h>
 #include <sha256.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Torin Carey <torin@tcarey.uk>");
+
+#define CTFMOD_MINOR 242
 
 #define STATE_UNINIT 0
 #define STATE_READY  1
@@ -230,64 +233,27 @@ static struct file_operations mod_fops = {
 	.llseek = no_llseek,
 };
 
-static int mod_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	add_uevent_var(env, "DEVMODE=%#o", 0444);
-	return 0;
-}
-
-static dev_t mod_dev = 0;
-static struct class mod_class = {
-	.owner = THIS_MODULE,
-	.name = "ctf",
-	.dev_uevent = mod_uevent,
+static struct miscdevice mod_miscdev = {
+	.minor = CTFMOD_MINOR,
+	.name = "flag",
+	.fops = &mod_fops,
 };
-static struct cdev *mod_cdev;
 
 static int __init mod_init(void)
 {
 	int result;
-	result = alloc_chrdev_region(&mod_dev, 0, 1, "ctfmod");
+	result = misc_register(&mod_miscdev);
 	if (result < 0) {
-		printk(KERN_ERR "ctfmod: initialisation failed: failed to alloc chrdev region\n");
-		goto fail_alloc_region;
-	}
-	mod_cdev = cdev_alloc();
-	if (!mod_cdev) {
-		result = -ENOMEM;
-		printk(KERN_ERR "ctfmod: initialisation failed: failed to alloc cdev\n");
-		goto fail_alloc_cdev;
-	}
-	cdev_init(mod_cdev, &mod_fops);
-	result = cdev_add(mod_cdev, mod_dev, 1);
-	if (result < 0) {
-		printk(KERN_ERR "ctfmod: initialisation failed: failed to add cdev\n");
-		goto fail_add_cdev;
-	}
-	class_register(&mod_class);
-	if (!device_create(&mod_class, NULL, mod_dev, NULL, "flag")) {
-		result = -EINVAL;
-		printk(KERN_ERR "ctfmod: initialisation failed: failed to create device\n");
-		goto fail_create_device;
+		printk(KERN_ERR "ctfmod: initialisation failed: failed to register misc_device\n");
+		return result;
 	}
 	printk(KERN_DEBUG "ctfmod: module loaded\n");
 	return 0;
-fail_create_device:
-	cdev_del(mod_cdev);
-	class_unregister(&mod_class);
-fail_add_cdev:
-fail_alloc_cdev:
-	unregister_chrdev_region(mod_dev, 1);
-fail_alloc_region:
-	return result;
 }
 
 static void __exit mod_exit(void)
 {
-	device_destroy(&mod_class, mod_dev);
-	class_unregister(&mod_class);
-	cdev_del(mod_cdev);
-	unregister_chrdev_region(mod_dev, 1);
+	misc_deregister(&mod_miscdev);
 	printk(KERN_DEBUG "ctfmod: module unloaded\n");
 }
 
