@@ -1,7 +1,5 @@
 #include <linux/module.h>
 #include <linux/fs.h>
-#include <linux/cdev.h>
-#include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
