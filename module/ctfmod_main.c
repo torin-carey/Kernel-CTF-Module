@@ -205,6 +205,27 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ret = 0;
 		printk(KERN_DEBUG "ctfmod: LOAD_SECRETS succeeded\n");
 		goto rel_state_lock;
+	case CTFMOD_RETRIEVE_SECRETS:
+		kuid = make_kuid(current_user_ns(), 0);
+		if (!uid_eq(current_cred()->uid, kuid) && !capable(CAP_SYS_ADMIN)) {
+			printk(KERN_DEBUG "ctfmod: RETRIEVE_SECRETS failed: permission denied\n");
+			ret = -EPERM;
+			goto finish;
+		}
+		if (atomic_read(&dev_state) != STATE_READY) {
+			printk(KERN_DEBUG "ctfmod: RETRIEVE_SECRETS failed: not initialised\n");
+			ret = -EBUSY;
+			goto finish;
+		}
+		if (copy_to_user((void *)arg, &secrets, sizeof(struct flag_key))) {
+			printk(KERN_DEBUG "ctfmod: RETRIEVE_SECRETS failed: could not write struct\n");
+			ret = -EFAULT;
+			goto finish;
+		}
+
+		ret = 0;
+		printk(KERN_DEBUG "ctfmod: RETRIEVE_SECRETS succeeded\n");
+		goto finish;
 	case CTFMOD_CHECK_STATUS:
 		ret = atomic_read(&dev_state) == STATE_READY ? 0 : -EBUSY;
 		goto finish;
