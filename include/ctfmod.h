@@ -48,6 +48,7 @@ struct flag_key {
 };
 
 #define CTFMOD_LOAD_SECRETS _IOW(FLAG_MAGIC, 4, struct flag_key *)
+#define CTFMOD_RETRIEVE_SECRETS _IOR(FLAG_MAGIC, 5, struct flag_key *)
 
 #define CTFMOD_CHECK_STATUS _IO(FLAG_MAGIC, 33)
 
