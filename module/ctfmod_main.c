@@ -194,7 +194,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&secrets, (void *)arg, sizeof(struct flag_key))) {
 			printk(KERN_DEBUG "ctfmod: LOAD_SECRETS failed: could not obtain struct\n");
 			ret = -EFAULT;
-			goto rel_state_lock;;
+			goto rel_state_lock;
 		}
 		printk(KERN_DEBUG "ctfmod: loaded flag1: %*pE\n", FLAG_LEN, secrets.flag[0]);
 		printk(KERN_DEBUG "ctfmod: loaded flag2: %*pE\n", FLAG_LEN, secrets.flag[1]);
@@ -204,7 +204,7 @@ static long mod_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		atomic_set(&dev_state, STATE_READY);
 		ret = 0;
 		printk(KERN_DEBUG "ctfmod: LOAD_SECRETS succeeded\n");
-		goto rel_state_lock;;
+		goto rel_state_lock;
 	case CTFMOD_CHECK_STATUS:
 		ret = atomic_read(&dev_state) == STATE_READY ? 0 : -EBUSY;
 		goto finish;
