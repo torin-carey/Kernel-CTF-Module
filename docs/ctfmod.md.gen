@@ -22,18 +22,18 @@ ctfmod - ioctls for ctfmod
 The following **ioctl**(2) requests are supported by the ctfmod driver. Each request
 except for **CTFMOD_CHECK_STATUS** a third argument, named *argp*.
 
-**CTFMOD_GETFLAG1**
+**CTFMOD_GET_FLAG1**
 : Gets the first flag. *argp* is a pointer to a user defined char array of minimum
 length **FLAG_LEN**. This call will fill *argp* with a nul-terminated ASCII string
 which is the first flag.
 
-**CTFMOD_GETFLAG2**
+**CTFMOD_GET_FLAG2**
 : Gets the second flag. *argp* is a pointer to a user defined char array of minimum
 length **FLAG_LEN**. This call will fill *argp* with a nul-terminated ASCII string
 which is the second flag. This call requires the authenticate command
 **UNLOCK_FLAG2** and will fail with **EPERM** if this is not unlocked.
 
-**CTFMOD_GETFLAG3**
+**CTFMOD_GET_FLAG3**
 : Gets the third flag. *argp* is a pointer to a user defined char array of minimum
 length **FLAG_LEN**. This call will fill *argp* with a nul-terminated ASCII string
 which is the third flag. This call requires the authenticate command
