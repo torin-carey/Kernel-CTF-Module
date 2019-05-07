@@ -84,6 +84,11 @@ present and future open instances of the ctfmod driver.
 	};
 \`\`\`
 
+**CTFMOD_RETRIEVE_SECRETS**
+: Used to retrieve the flags and key that has already been loaded into the module.
+Requires the process to run as root or have the capability **CAP_SYS_ADMIN**.
+*argp* is a pointer to a struct flag_key variable as defined in **CTFMOD_LOAD_SECRETS**.
+
 **CTFMOD_CHECK_STATUS**
 : Used to check whether or not the driver has been initialised with
 **CTFMOD_LOAD_SECRETS**. Returns zero if initialised and the error code
@@ -122,6 +127,15 @@ The following errors can be returned by **CTFMOD_LOAD_SECRETS**:
 
 **EINTR**
 : The process received a signal while waiting.
+
+**EFAULT**
+: The user supplied *argp* cannot be fully read.
+
+The following errors can be returned by **CTFMOD_RETRIEVE_SECRETS**:
+
+**EPERM**
+: The calling process does not have an EUID of zero and does not have the
+**CAP_SYS_ADMIN** capability.
 
 **EFAULT**
 : The user supplied *argp* cannot be fully read.
