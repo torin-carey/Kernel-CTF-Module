@@ -12,6 +12,12 @@
 
 #define CTFMOD_DEV "/dev/flag"
 
+#define RET_SUCCESS 0
+#define RET_MISSING 1
+#define RET_INPUT   2
+#define RET_PERM    3
+#define RET_OPEN    4
+
 #define ENV_FLAG1 "FLAG1"
 #define ENV_FLAG2 "FLAG2"
 #define ENV_FLAG3 "FLAG3"
@@ -114,7 +120,7 @@ int main(int argc, char **argv)
 			break;
 		case '?':
 			fprintf(stderr, usage, argv[0]);
-			return -1;
+			return RET_INPUT;
 		}
 	}
 
@@ -124,19 +130,19 @@ int main(int argc, char **argv)
 		ret = 0;
 		if (!flag1) {
 			fprintf(stderr, "missing " ENV_FLAG1 "\n");
-			ret = -1;
+			ret = RET_MISSING;
 		}
 		if (!flag2) {
 			fprintf(stderr, "missing " ENV_FLAG2 "\n");
-			ret = -1;
+			ret = RET_MISSING;
 		}
 		if (!flag3) {
 			fprintf(stderr, "missing " ENV_FLAG3 "\n");
-			ret = -1;
+			ret = RET_MISSING;
 		}
 		if (!key) {
 			fprintf(stderr, "missing " ENV_KEY "\n");
-			ret = -1;
+			ret = RET_MISSING;
 		}
 		if (ret)
 			return ret;
@@ -151,20 +157,20 @@ int get_secrets(void)
 	struct flag_key fk;
 	int fd = open(CTFMOD_DEV, O_RDONLY);
 	if (fd == -1) {
-		ret = errno;
+		ret = RET_OPEN;
 		fprintf(stderr, "failed to open device: %m\n");
 		goto finish;
 	}
 
 	if (ioctl(fd, CTFMOD_RETRIEVE_SECRETS, &fk) == -1) {
-		ret = errno;
-		switch (ret) {
+		switch (errno) {
 		case EBUSY:
 			fprintf(stderr, "failed to retrieve secrets: not initialised\n");
 			break;
 		default:
 			fprintf(stderr, "failed to retrieve secrets: %m\n");
 		}
+		ret = RET_PERM;
 		goto rel_dev;
 	}
 
@@ -181,7 +187,7 @@ int get_secrets(void)
 
 	printf("FLAG1:\t%s\nFLAG2:\t%s\nFLAG3:\t%s\nKEY:\t%s\n",
 				fk.flag[0], fk.flag[1], fk.flag[2], key);
-	ret = 0;
+	ret = RET_SUCCESS;
 rel_dev:
 	close(fd);
 finish:
@@ -192,7 +198,7 @@ int set_secrets(const char *flag1, const char *flag2, const char *flag3, const c
 {
 	int ret;
 	if (!valid_flag(flag1) || !valid_flag(flag2) || !valid_flag(flag3)) {
-		ret = -1;
+		ret = RET_INPUT;
 		goto finish;
 	}
 
@@ -201,29 +207,30 @@ int set_secrets(const char *flag1, const char *flag2, const char *flag3, const c
 	memcpy(fk.flag[1], flag2, FLAG_LEN);
 	memcpy(fk.flag[2], flag3, FLAG_LEN);
 
-	if ((ret = parse_key(fk.key, key))) {
+	if (parse_key(fk.key, key)) {
+		ret = RET_INPUT;
 		goto finish;
 	}
 
 	int fd = open(CTFMOD_DEV, O_RDONLY);
 	if (fd == -1) {
-		ret = errno;
+		ret = RET_OPEN;
 		fprintf(stderr, "failed to open device: %m\n");
 		goto finish;
 	}
 
 	if (ioctl(fd, CTFMOD_LOAD_SECRETS, &fk) == -1) {
-		ret = errno;
-		switch (ret) {
+		switch (errno) {
 		case EBUSY:
 			fprintf(stderr, "failed to load secrets: already initialised\n");
 			break;
 		default:
 			fprintf(stderr, "failed to load secrets: %m\n");
 		}
+		ret = RET_PERM;
 		goto rel_dev;
 	}
-	ret = 0;
+	ret = RET_SUCCESS;
 	printf("secrets loaded successfully\n");
 rel_dev:
 	close(fd);
