@@ -118,9 +118,6 @@ The following errors can be returned by **CTFMOD_AUTHENTICATE**:
 
 The following errors can be returned by **CTFMOD_LOAD_SECRETS**:
 
-**EBUSY**
-: The ctfmod driver has already been initialised.
-
 **EPERM**
 : The calling process does not have an EUID of zero and does not have the
 **CAP_SYS_ADMIN** capability.
